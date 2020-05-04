@@ -1,0 +1,40 @@
+#record-preview {
+  border: thin solid black;
+  overflow: auto;
+  max-height: 200px;
+}
+
+#list-of-records {
+  max-height: 200px;
+}
+
+.float-right {
+  float: right;
+}
+
+section>h1 {
+  padding: 5px 10px;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+textarea {
+  padding: 2px;
+  border-width: 1px;
+  $width: calc(100% - 6px);
+  width: $width;
+  max-width: $width;
+  height: 50px;
+  font-family: monospace;
+  display: block;
+}
+
+textarea,
+section {
+  margin-bottom: 10px;
+}
+
+pre,
+textarea {
+  font-size: 0.9em;
+}

@@ -1,0 +1,19 @@
+{
+   "$schema": "./manifest.schema.json",
+   "id": "ori229/print-bib-records",
+   "title": "Print Bib records",
+   "description": "Allows quickly printing records from the repository hit list",
+   "author": "Ori Miller",
+   "entities": [
+      "BIB_MMS"
+   ],
+   "contentSecurity": {
+      "sandbox": {
+         "popups": true
+      }
+   },
+   "fullscreen": {
+      "allow": true,
+      "open": false
+   }
+}
