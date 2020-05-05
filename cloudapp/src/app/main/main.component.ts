@@ -3,7 +3,7 @@ import { MatCheckboxChange } from '@angular/material';
 import { Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http'; 
 import {
-  CloudAppRestService, CloudAppEventsService,  Entity, PageInfo
+  CloudAppRestService, CloudAppEventsService, CloudAppSettingsService, Entity, PageInfo
 } from '@exlibris/exl-cloudapp-angular-lib';
 
 @Component({
@@ -15,7 +15,6 @@ import {
 // https://jira.exlibrisgroup.com/browse/URM-129182
 // https://ideas.exlibrisgroup.com/forums/308173-alma/suggestions/17421160-it-would-be-helpful-if-there-were-an-option-to-pr
 // https://www.loc.gov/standards/marcxml/xslt/MARC21slim2English.xsl
-// Allow customization of the XSL (inst-level? too large?)
 export class MainComponent implements OnInit {
 
   private pageLoad$: Subscription;
@@ -29,11 +28,13 @@ export class MainComponent implements OnInit {
 
   constructor(private restService: CloudAppRestService,
     private eventsService: CloudAppEventsService,
+    private settingsService: CloudAppSettingsService,
     private readonly http: HttpClient) { }
 
   ngOnInit() {
     this.eventsService.getPageMetadata().subscribe(this.onPageLoad);
     this.pageLoad$ = this.eventsService.onPageLoad(this.onPageLoad);
+    this.loadXsl();
   }
 
   ngOnDestroy(): void {
@@ -41,15 +42,19 @@ export class MainComponent implements OnInit {
   }
 
   onPageLoad = (pageInfo: PageInfo) => {
-    this.loadXsl();
     this.bibEntities = (pageInfo.entities||[]).filter(e=>['BIB_MMS', 'IEP', 'BIB'].includes(e.type));
   }
 
   loadXsl() {
-    this.http.get('assets/MARC21slim2English.xsl',{ responseType: 'application' as 'json'}).subscribe(data => {
-      console.log("MARC21slim2English loaded");
-      this.xsl = data.toString();  
-    })
+    this.settingsService.get().subscribe( response => {
+      console.log("Got the settings :");
+      console.log(response);
+      this.http.get('assets/' + response.xslFile, { responseType: 'application' as 'json'}).subscribe(data => {
+        console.log("MARC21slim2English loaded");
+        this.xsl = data.toString();  
+      })
+    },
+    err => console.log(err.message));
   }
 
   xsltOnBib(bib: any) : string {

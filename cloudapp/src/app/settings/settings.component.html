@@ -1,0 +1,26 @@
+<div class="commands-container float-right">
+    <a [routerLink]="['']">
+    <button mat-stroked-button color="primary">
+      <mat-icon>arrow_back</mat-icon>
+      Home
+    </button>
+    </a>
+</div>
+
+<h1>Settings</h1>
+
+<form>
+   
+    <mat-form-field>
+        <mat-label>XSL File to convert MARCXML to HTML</mat-label>
+        <select matNativeControl #filenameSelected >
+          <option value="MARC21slim2English.xsl"    [selected]="optionSelected =='MARC21slim2English.xsl'"  >MARC21slim2English.xsl</option>
+          <option value="MARC21demo.xsl"            [selected]="optionSelected =='MARC21demo.xsl'"          >MARC21demo.xsl</option>
+        </select>
+    </mat-form-field>
+    <div class="commands-container">
+        <button (click)="save(filenameSelected.value)"
+            type="button" mat-stroked-button color="primary">Save</button>
+    </div>
+</form>
+
