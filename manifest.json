@@ -3,7 +3,7 @@
    "id": "ori229/print-bib-record",
    "title": "Print Bib records",
    "description": "Allows quickly printing records from the repository hit list",
-   "author": "Ori Miller",
+   "author": "Ori M.",
    "entities": [
       "BIB_MMS"
    ],
