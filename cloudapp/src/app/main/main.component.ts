@@ -46,11 +46,15 @@ export class MainComponent implements OnInit {
   }
 
   loadXsl() {
+    let xslFilepath: string = 'assets/' + 'MARC21slim2English.xsl'; // default
     this.settingsService.get().subscribe( response => {
       console.log("Got the settings :");
       console.log(response);
-      this.http.get('assets/' + response.xslFile, { responseType: 'application' as 'json'}).subscribe(data => {
-        console.log("MARC21slim2English loaded");
+      if (response.xslFile)
+        xslFilepath = 'assets/' + response.xslFile;
+        
+      this.http.get(xslFilepath, { responseType: 'application' as 'json'}).subscribe(data => {
+        console.log("Load: "+ xslFilepath);
         this.xsl = data.toString();  
       })
     },
