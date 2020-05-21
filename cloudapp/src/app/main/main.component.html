@@ -4,6 +4,10 @@
   Print {{numRecordsToPrint}} 
   record<span *ngIf="numRecordsToPrint > 1">s</span>
 </button>
+<button *ngIf="numRecordsToPrint > 0"
+  class="float-right" mat-stroked-button color="primary" (click)="clearSelected()">
+  Clear
+</button>
 
 <p></p>
 <div *ngIf="this.bibEntities.length > 0; else nobib">

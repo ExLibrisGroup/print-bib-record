@@ -86,6 +86,10 @@ export class MainComponent implements OnInit {
     pwa.document.close();
   }
 
+  clearSelected() {
+    this.bibHtmls = {};
+  }
+  
   listChange(e: MatCheckboxChange){
     console.log({mmsId: e.source.value, checked: e.checked});
     if (e.checked) {
