@@ -14,12 +14,11 @@ import {
 
 // https://jira.exlibrisgroup.com/browse/URM-129182
 // https://ideas.exlibrisgroup.com/forums/308173-alma/suggestions/17421160-it-would-be-helpful-if-there-were-an-option-to-pr
-// https://www.loc.gov/standards/marcxml/xslt/MARC21slim2English.xsl
 export class MainComponent implements OnInit {
 
   private pageLoad$: Subscription;
   private xsl: string;
-  bibHtmls: { [index: string]: any; } = {};
+  bibHash: { [index: string]: any; } = {};
   bib: any;
   pageEntities: Entity[];
   bibEntities: Entity[];
@@ -62,7 +61,6 @@ export class MainComponent implements OnInit {
   }
 
   xsltOnBib(bib: any) : string {
-    //var xml = new DOMParser().parseFromString(bib.anies, "application/xml");  console.log(xml);
     let xml: string = bib.anies;
     let xmlDoc = (new DOMParser()).parseFromString(xml, 'text/xml');
     let xslDoc = (new DOMParser()).parseFromString(this.xsl, 'text/xml');
@@ -72,12 +70,38 @@ export class MainComponent implements OnInit {
     return output;
   }
 
+  xsltOnCollection(bibCollectionXml: any) : string {
+    //console.log("bibCollectionXml:"+bibCollectionXml);
+    //console.log("this.xsl:"+this.xsl);
+    let xmlDoc = (new DOMParser()).parseFromString(bibCollectionXml, 'text/xml');
+    let xslDoc = (new DOMParser()).parseFromString(this.xsl, 'text/xml');
+    let processor = new XSLTProcessor();
+    processor.importStylesheet(xslDoc); // from https://github.com/krtnio/angular-xslt
+    let  output = (new XMLSerializer()).serializeToString(processor.transformToFragment(xmlDoc, document));
+    //console.log("output:"+output);
+    return output;
+  }
+
+  singleRecMarcXml(bibRec: any) : string {
+    let marcXml: string = String(bibRec.anies);
+    marcXml = marcXml.replace("<?xml version=\"1.0\" encoding=\"UTF-16\"?>","");
+
+    // enriching the MARCXML with additional useful fields
+    marcXml = marcXml.replace("</record>","<mms_id>"+bibRec.mms_id+"</mms_id>"+"</record>");
+    marcXml = marcXml.replace("</record>","<title>"+bibRec.title+"</title>"+"</record>");
+    marcXml = marcXml.replace("</record>","<author>"+bibRec.author+"</author>"+"</record>");
+    
+    return marcXml;
+  }
+
+
   printPreviewNewTab() {
     let innerHtml: string = "";
-    for (let key in this.bibHtmls) {
-      let value:string = this.bibHtmls[key];
-      innerHtml += "<div>__________________ mms-id: "+ key + "<br/>" + value + "</div>" ; 
+    let xmlAllBibs: string = "";
+    for (let key in this.bibHash) {
+      xmlAllBibs = xmlAllBibs + this.singleRecMarcXml(this.bibHash[key]);
     }       
+    innerHtml = this.xsltOnCollection("<collection>" + xmlAllBibs + "</collection>"); 
 
     let Pagelink = "about:blank";
     let pwa = window.open(Pagelink, "_new");
@@ -87,24 +111,23 @@ export class MainComponent implements OnInit {
   }
 
   clearSelected() {
-    this.bibHtmls = {};
+    this.bibHash = {};
   }
-  
+
   listChange(e: MatCheckboxChange){
     console.log({mmsId: e.source.value, checked: e.checked});
     if (e.checked) {
       this.restService.call(`/bibs/${e.source.value}`).subscribe( bib => {
+        this.bibHash[e.source.value] = bib;
+        this.formattedRecord = this.xsltOnCollection("<collection>" + this.singleRecMarcXml(bib) + "</collection>"); 
         this.bib = (bib.record_format=='marc21') ? bib : null;
-        let htmlBib: string = this.xsltOnBib(bib);
-        this.formattedRecord = htmlBib;
-        this.bibHtmls[e.source.value] = htmlBib;
-        this.numRecordsToPrint = Object.keys(this.bibHtmls).length;
+        this.numRecordsToPrint = Object.keys(this.bibHash).length;
       },
       err => console.log(err.message));
     } else {
       this.formattedRecord = "";
-      delete this.bibHtmls[e.source.value];
-      this.numRecordsToPrint = Object.keys(this.bibHtmls).length;
+      delete this.bibHash[e.source.value];
+      this.numRecordsToPrint = Object.keys(this.bibHash).length;
     }
   }
  

@@ -15,7 +15,7 @@
   <h3>Select record(s) to print:</h3>
   <div *ngFor="let entity of bibEntities" id="list-of">
     <mat-checkbox [value]="entity.id"
-    (change)="listChange($event)" [checked]="bibHtmls[entity.id]" 
+    (change)="listChange($event)" [checked]="bibHash[entity.id]" 
     >{{entity.description}}</mat-checkbox>
   </div> 
 
