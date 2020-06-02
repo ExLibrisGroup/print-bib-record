@@ -1,25 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import { CloudAppSettingsService} from '@exlibris/exl-cloudapp-angular-lib';
 import { CloudAppConfigService} from '@exlibris/exl-cloudapp-angular-lib';
+import { Constants } from '../constants';
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss']
 })
+
 export class SettingsComponent implements OnInit {
   
   optionSelected: string;
   saving: boolean = false;
-  xslFiles = [
-    { id: 'MARC21ColumnarFormat.xsl', name: 'MARC21ColumnarFormat.xsl' },
-    { id: 'MARC21slim2English.xsl',   name: 'MARC21slim2English.xsl' }
-  ];
+  xslFiles = Constants.XSL_FILES;
 
   constructor ( 
     private configService: CloudAppConfigService,
     private settingsService: CloudAppSettingsService
-  ) { }
+  ) {}
   
   ngOnInit() {     this.load();   }
 
@@ -28,8 +27,12 @@ export class SettingsComponent implements OnInit {
     this.configService.get().subscribe( response => {
       console.log("Got the config:");
       console.log(response);
-      this.xslFiles[2] = { id: response.customXsls[0].name,   name: response.customXsls[0].name }; 
-      console.log(this.xslFiles);
+      if (response.customXsls) {
+        response.customXsls.forEach(customXsl => {
+          this.xslFiles.push( { id: "instConfig:"+customXsl.name,   name: customXsl.name } );
+          console.log(this.xslFiles);
+        });
+      }
     },
     err => console.log(err.message));    
 

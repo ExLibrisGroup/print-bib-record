@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CloudAppConfigService} from '@exlibris/exl-cloudapp-angular-lib';
 import { HttpClient } from '@angular/common/http'; 
+import {Constants} from '../constants';
+
 
 @Component({
   selector: 'app-config',
@@ -12,6 +14,7 @@ export class ConfigComponent implements OnInit {
   
   lib_xsl_name_0: string = "";
   lib_xsl_val_0: string = "";
+  xslFiles = Constants.XSL_FILES;
   saving: boolean = false;
 
   constructor ( 
@@ -25,8 +28,10 @@ export class ConfigComponent implements OnInit {
     this.configService.get().subscribe( response => {
       console.log("Got the config:");
       console.log(response);
-      this.lib_xsl_name_0 = response.customXsls[0].name;
-      this.lib_xsl_val_0  = response.customXsls[0].xsl;
+      if (response.customXsls) {
+        this.lib_xsl_name_0 = response.customXsls[0].name;
+        this.lib_xsl_val_0  = response.customXsls[0].xsl;
+      }
     },
     err => console.log(err.message));    
   }    

@@ -20,10 +20,13 @@
     </div>
 
     <mat-form-field>
-      <mat-label>Pick a file to use as a starting point</mat-label>
-      <select matNativeControl #filenameSelected >
-        <option value="MARC21slim2English.xsl"   [selected]="optionSelected =='MARC21slim2English.xsl'"   >MARC21slim2English.xsl</option>
-        <option value="MARC21ColumnarFormat.xsl" [selected]="optionSelected =='MARC21ColumnarFormat.xsl'" >MARC21ColumnarFormat.xsl</option>
+      <mat-label>Pick a file to use as a starting point:</mat-label>
+      <select matNativeControl #filenameSelected formControlName="xslFiles" id="xslFiles">
+        <option *ngFor="let xslFile of xslFiles; let i = index"
+          [value]="xslFiles[i].id"
+          [selected]="optionSelected == xslFiles[i].id">
+          {{xslFiles[i].name}}
+        </option>
       </select>
     </mat-form-field>
 
