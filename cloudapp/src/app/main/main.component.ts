@@ -55,6 +55,7 @@ export class MainComponent implements OnInit {
       }
       console.log("xslFilepath: "+ xslFilepath);
       if (xslFilepath.endsWith(".xsl")) {
+        // One of the OTB files
         this.http.get(xslFilepath, { responseType: 'application' as 'json'}).subscribe(data => {
           console.log("Load: "+ xslFilepath);
           this.xsl = data.toString();  

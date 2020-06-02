@@ -15,6 +15,8 @@ export class ConfigComponent implements OnInit {
   lib_xsl_name_0: string = "";
   lib_xsl_val_0: string = "";
   xslFiles = [];
+  sampleMarcxml: string = "";
+  formattedRecord: string; 
   saving: boolean = false;
 
   constructor ( 
@@ -25,6 +27,7 @@ export class ConfigComponent implements OnInit {
   ngOnInit() {   this.load();   }
 
   load() {
+    this.sampleMarcxml = Constants.SAMPLE_MARCXML;
     this.xslFiles = JSON.parse(JSON.stringify(Constants.XSL_FILES)); // clone by val
     this.configService.get().subscribe( response => {
       console.log("Got the config:");
@@ -32,6 +35,7 @@ export class ConfigComponent implements OnInit {
       if (response.customXsls) {
         this.lib_xsl_name_0 = response.customXsls[0].name;
         this.lib_xsl_val_0  = response.customXsls[0].xsl;
+        this.runXsl();
       }
     },
     err => console.log(err.message));    
@@ -65,5 +69,13 @@ export class ConfigComponent implements OnInit {
     })
   }
 
+  runXsl() {
+    let xmlDoc = (new DOMParser()).parseFromString(this.sampleMarcxml, 'text/xml');
+    let xslDoc = (new DOMParser()).parseFromString(this.lib_xsl_val_0, 'text/xml');
+    let processor = new XSLTProcessor();
+    processor.importStylesheet(xslDoc); // from https://github.com/krtnio/angular-xslt
+    let  output = (new XMLSerializer()).serializeToString(processor.transformToFragment(xmlDoc, document));
+    this.formattedRecord = output; 
+  }
 
 }
