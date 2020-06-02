@@ -13,7 +13,7 @@ export class SettingsComponent implements OnInit {
   
   optionSelected: string;
   saving: boolean = false;
-  xslFiles = Constants.XSL_FILES;
+  xslFiles = [];
 
   constructor ( 
     private configService: CloudAppConfigService,
@@ -24,12 +24,14 @@ export class SettingsComponent implements OnInit {
 
   load() {
     // if the App has inst-level-config - add it to the dropdown
+    this.xslFiles = JSON.parse(JSON.stringify(Constants.XSL_FILES)); // clone by val
     this.configService.get().subscribe( response => {
       console.log("Got the config:");
       console.log(response);
       if (response.customXsls) {
         response.customXsls.forEach(customXsl => {
           this.xslFiles.push( { id: "instConfig:"+customXsl.name,   name: customXsl.name } );
+          console.log("Added another line to the drop-down");
           console.log(this.xslFiles);
         });
       }

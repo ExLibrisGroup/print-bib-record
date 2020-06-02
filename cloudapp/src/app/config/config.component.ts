@@ -14,7 +14,7 @@ export class ConfigComponent implements OnInit {
   
   lib_xsl_name_0: string = "";
   lib_xsl_val_0: string = "";
-  xslFiles = Constants.XSL_FILES;
+  xslFiles = [];
   saving: boolean = false;
 
   constructor ( 
@@ -25,6 +25,7 @@ export class ConfigComponent implements OnInit {
   ngOnInit() {   this.load();   }
 
   load() {
+    this.xslFiles = JSON.parse(JSON.stringify(Constants.XSL_FILES)); // clone by val
     this.configService.get().subscribe( response => {
       console.log("Got the config:");
       console.log(response);

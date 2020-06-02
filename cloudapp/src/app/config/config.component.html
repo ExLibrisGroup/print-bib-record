@@ -21,7 +21,7 @@
 
     <mat-form-field>
       <mat-label>Pick a file to use as a starting point:</mat-label>
-      <select matNativeControl #filenameSelected formControlName="xslFiles" id="xslFiles">
+      <select matNativeControl #filenameSelected id="xslFiles">
         <option *ngFor="let xslFile of xslFiles; let i = index"
           [value]="xslFiles[i].id"
           [selected]="optionSelected == xslFiles[i].id">

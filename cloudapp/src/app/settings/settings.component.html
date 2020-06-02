@@ -9,7 +9,7 @@
 <form>
     <mat-form-field>
         <mat-label>XSL File to transform MARCXML</mat-label>
-        <select matNativeControl #filenameSelected formControlName="xslFiles" id="xslFiles">
+        <select matNativeControl #filenameSelected id="xslFiles">
           <option *ngFor="let xslFile of xslFiles; let i = index"
             [value]="xslFiles[i].id"
             [selected]="optionSelected == xslFiles[i].id">
