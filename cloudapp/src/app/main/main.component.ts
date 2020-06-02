@@ -3,7 +3,7 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 import { Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http'; 
 import {
-  CloudAppRestService, CloudAppEventsService, CloudAppSettingsService, Entity, PageInfo
+  CloudAppRestService, CloudAppEventsService, CloudAppSettingsService, CloudAppConfigService, Entity, PageInfo
 } from '@exlibris/exl-cloudapp-angular-lib';
 
 @Component({
@@ -28,6 +28,7 @@ export class MainComponent implements OnInit {
   constructor(private restService: CloudAppRestService,
     private eventsService: CloudAppEventsService,
     private settingsService: CloudAppSettingsService,
+    private configService: CloudAppConfigService,
     private readonly http: HttpClient) { }
 
   ngOnInit() {
@@ -49,13 +50,23 @@ export class MainComponent implements OnInit {
     this.settingsService.get().subscribe( response => {
       console.log("Got the settings :");
       console.log(response);
-      if (response.xslFile)
+      if (response.xslFile) {
         xslFilepath = 'assets/' + response.xslFile;
-        
-      this.http.get(xslFilepath, { responseType: 'application' as 'json'}).subscribe(data => {
-        console.log("Load: "+ xslFilepath);
-        this.xsl = data.toString();  
-      })
+      }
+      if (xslFilepath.endsWith(".xsl")) {
+        this.http.get(xslFilepath, { responseType: 'application' as 'json'}).subscribe(data => {
+          console.log("Load: "+ xslFilepath);
+          this.xsl = data.toString();  
+        })
+      } else {
+        // XSL configured by the Inst admin - load from the config.
+        this.configService.get().subscribe( response => {
+          console.log("Got the config:");
+          console.log(response);
+          this.xsl = response.customXsls[0].xsl;
+        },
+        err => console.log(err.message));    
+      }
     },
     err => console.log(err.message));
   }
@@ -112,6 +123,7 @@ export class MainComponent implements OnInit {
 
   clearSelected() {
     this.bibHash = {};
+    this.numRecordsToPrint = 0;
   }
 
   listChange(e: MatCheckboxChange){

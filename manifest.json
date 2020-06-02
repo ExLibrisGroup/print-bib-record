@@ -8,7 +8,8 @@
       "BIB_MMS"
    ],
    "pages": {
-      "settings": "/#/settings"
+      "settings": "/#/settings",
+      "config": "/#/config"
    },
    "contentSecurity": {
       "sandbox": {

@@ -1,26 +1,26 @@
-<div class="commands-container float-right">
-    <a [routerLink]="['']">
-    <button mat-stroked-button color="primary">
-      <mat-icon>arrow_back</mat-icon>
-      Home
-    </button>
-    </a>
+<div class="title">
+  <h1>Settings</h1>
+
+  <a [routerLink]="['']">
+    <button mat-raised-button><mat-icon>arrow_back</mat-icon>Back</button>
+  </a>
 </div>
 
-<h1>Settings</h1>
-
 <form>
-   
     <mat-form-field>
-        <mat-label>XSL File to convert MARCXML to HTML</mat-label>
-        <select matNativeControl #filenameSelected >
-          <option value="MARC21slim2English.xsl"   [selected]="optionSelected =='MARC21slim2English.xsl'"   >MARC21slim2English.xsl</option>
-          <option value="MARC21ColumnarFormat.xsl" [selected]="optionSelected =='MARC21ColumnarFormat.xsl'" >MARC21ColumnarFormat.xsl</option>
+        <mat-label>XSL File to transform MARCXML</mat-label>
+        <select matNativeControl #filenameSelected formControlName="xslFiles" id="xslFiles">
+          <option *ngFor="let xslFile of xslFiles; let i = index"
+            [value]="xslFiles[i].id"
+            [selected]="optionSelected == xslFiles[i].id">
+            {{xslFiles[i].name}}
+          </option>
         </select>
     </mat-form-field>
+    
     <div class="commands-container">
-        <button (click)="save(filenameSelected.value)"
-            type="button" mat-stroked-button color="primary">Save</button>
+        <button (click)="save(filenameSelected.value)" type="button" mat-stroked-button [disabled]="saving">Save</button>
+        <mat-spinner diameter="30" class="spinner" *ngIf="saving"></mat-spinner>
     </div>
 </form>
 
