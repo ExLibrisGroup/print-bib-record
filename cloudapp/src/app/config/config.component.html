@@ -15,7 +15,7 @@
       </mat-form-field>
       <mat-form-field>
         <mat-label>XSL (enlarge the screen for easy editing)</mat-label>
-        <textarea matInput class="xsl-edit" placeholder="Your XSL here" [value]="lib_xsl_val_0" (input)="lib_xsl_val_0 = $event.target.value"></textarea> <!--(change)="runXsl()"-->
+        <textarea matInput class="xsl-edit" placeholder="Your XSL here" [value]="lib_xsl_val_0" (input)="onXslChanged($event)"></textarea> <!--(change)="runXsl()"-->
       </mat-form-field>
     </div>
 
@@ -30,7 +30,6 @@
         <h3>Sample MARCXML (2 records):</h3>
         <textarea matInput class="xml-record" [value]="sampleMarcxml" (input)="sampleMarcxml = $event.target.value"></textarea>
         <h3>Result:</h3>
-        <button class="float-right" mat-stroked-button (click)="runXsl()" type="button"> Refresh </button>
         <div id="record-preview" [innerHTML]="formattedRecord"></div>
       </mat-expansion-panel>
 
@@ -56,8 +55,8 @@
     </mat-accordion>
 
     <div class="commands-container">
-      <button mat-stroked-button (click)="save()" type="button" [disabled]="saving">Save</button>
-      <button mat-stroked-button (click)="load()" type="button">Reset</button> 
+      <button mat-stroked-button (click)="onSaveBtnClicked()" type="button" [disabled]="saving">Save</button>
+      <button mat-stroked-button (click)="onLoadOrReset()" type="button">Reset</button> 
       <mat-spinner diameter="30" class="spinner" *ngIf="saving"></mat-spinner>
     </div>
 

@@ -73,16 +73,6 @@ export class MainComponent implements OnInit {
     err => console.log(err.message));
   }
 
-  xsltOnBib(bib: any) : string {
-    let xml: string = bib.anies;
-    let xmlDoc = (new DOMParser()).parseFromString(xml, 'text/xml');
-    let xslDoc = (new DOMParser()).parseFromString(this.xsl, 'text/xml');
-    let processor = new XSLTProcessor();
-    processor.importStylesheet(xslDoc); // from https://github.com/krtnio/angular-xslt
-    let  output = (new XMLSerializer()).serializeToString(processor.transformToFragment(xmlDoc, document));
-    return output;
-  }
-
   xsltOnCollection(bibCollectionXml: any) : string {
     //console.log("bibCollectionXml:"+bibCollectionXml);
     //console.log("this.xsl:"+this.xsl);
@@ -108,7 +98,7 @@ export class MainComponent implements OnInit {
   }
 
 
-  printPreviewNewTab() {
+  onPrintPreviewNewTab() {
     let innerHtml: string = "";
     let xmlAllBibs: string = "";
     for (let key in this.bibHash) {
@@ -123,12 +113,12 @@ export class MainComponent implements OnInit {
     pwa.document.close();
   }
 
-  clearSelected() {
+  onClearSelected() {
     this.bibHash = {};
     this.numRecordsToPrint = 0;
   }
 
-  listChange(e: MatCheckboxChange){
+  onListChanged(e: MatCheckboxChange){
     console.log({mmsId: e.source.value, checked: e.checked});
     if (e.checked) {
       this.restService.call(`/bibs/${e.source.value}`).subscribe( bib => {

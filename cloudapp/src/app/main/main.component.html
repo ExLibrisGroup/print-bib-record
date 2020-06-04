@@ -1,11 +1,11 @@
 
 <button *ngIf="numRecordsToPrint > 0"
-  class="float-right" mat-stroked-button color="primary" (click)="printPreviewNewTab()">
+  class="float-right" mat-stroked-button color="primary" (click)="onPrintPreviewNewTab()">
   Print {{numRecordsToPrint}} 
   record<span *ngIf="numRecordsToPrint > 1">s</span>
 </button>
 <button *ngIf="numRecordsToPrint > 0"
-  class="float-right" mat-stroked-button color="primary" (click)="clearSelected()">
+  class="float-right" mat-stroked-button color="primary" (click)="onClearSelected()">
   Clear
 </button>
 
@@ -15,7 +15,7 @@
   <h3>Select record(s) to print:</h3>
   <div *ngFor="let entity of bibEntities" id="list-of">
     <mat-checkbox [value]="entity.id"
-    (change)="listChange($event)" [checked]="bibHash[entity.id]" 
+    (change)="onListChanged($event)" [checked]="bibHash[entity.id]" 
     >{{entity.description}}</mat-checkbox>
   </div> 
 

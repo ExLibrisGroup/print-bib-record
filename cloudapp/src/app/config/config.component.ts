@@ -24,9 +24,11 @@ export class ConfigComponent implements OnInit {
     private readonly http: HttpClient
   ) {}
   
-  ngOnInit() {   this.load();   }
+  ngOnInit() {   this.onLoadOrReset();   }
 
-  load() {
+  onLoadOrReset() {
+    console.log("loading config.");
+
     this.sampleMarcxml = Constants.SAMPLE_MARCXML;
     this.xslFiles = JSON.parse(JSON.stringify(Constants.XSL_FILES)); // clone by val
     this.configService.get().subscribe( response => {
@@ -35,16 +37,22 @@ export class ConfigComponent implements OnInit {
       if (response.customXsls) {
         this.lib_xsl_name_0 = response.customXsls[0].name;
         this.lib_xsl_val_0  = response.customXsls[0].xsl;
-        this.runXsl();
+        this.onRefreshRunXsl();
       }
     },
     err => console.log(err.message));    
   }    
 
-  save() {
+  onXslChanged(event: Event) {
+    console.log("XSL was changed");
+    this.lib_xsl_val_0 = (<HTMLInputElement>event.target).value;
+    this.onRefreshRunXsl();
+  }
+
+  onSaveBtnClicked() {
     console.log("Saving config: "+ this.lib_xsl_name_0);
     this.saving=true;
-    this.lib_xsl_name_0 = this.lib_xsl_name_0.replace(".xsl",""); // TODO explain...
+    this.lib_xsl_name_0 = this.lib_xsl_name_0.replace(".xsl",""); // the .xsl suffix is used to mark that it's an OTB XSL
     var toSave = {
             customXsls: [
                 {
@@ -69,7 +77,7 @@ export class ConfigComponent implements OnInit {
     })
   }
 
-  runXsl() {
+  onRefreshRunXsl() {
     let xmlDoc = (new DOMParser()).parseFromString(this.sampleMarcxml, 'text/xml');
     let xslDoc = (new DOMParser()).parseFromString(this.lib_xsl_val_0, 'text/xml');
     let processor = new XSLTProcessor();

@@ -19,7 +19,7 @@
     </mat-form-field>
     
     <div class="commands-container">
-        <button (click)="save(filenameSelected.value)" type="button" mat-stroked-button [disabled]="saving">Save</button>
+        <button (click)="onSaveBtnClicked(filenameSelected.value)" type="button" mat-stroked-button [disabled]="saving">Save</button>
         <mat-spinner diameter="30" class="spinner" *ngIf="saving"></mat-spinner>
     </div>
 </form>

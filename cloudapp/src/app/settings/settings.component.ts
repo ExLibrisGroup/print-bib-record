@@ -48,7 +48,7 @@ export class SettingsComponent implements OnInit {
      err => console.log(err.message));
   }
 
-  save(newVal: string) {
+  onSaveBtnClicked(newVal: string) {
     console.log("Saving settings: "+ newVal);
     this.saving=true;
     var toSave = { "xslFile": newVal };
