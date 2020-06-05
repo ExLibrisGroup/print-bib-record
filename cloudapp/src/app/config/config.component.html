@@ -28,7 +28,7 @@
           <!-- <mat-panel-description>Enlarge the screen for easy editing</mat-panel-description> -->
         </mat-expansion-panel-header>
         <h3>Sample MARCXML (2 records):</h3>
-        <textarea matInput class="xml-record" [value]="sampleMarcxml" (input)="sampleMarcxml = $event.target.value"></textarea>
+        <textarea matInput class="xml-record" [value]="sampleMarcxml" (input)="onSampleMarcxmlChanged($event)"></textarea>
         <h3>Result:</h3>
         <div id="record-preview" [innerHTML]="formattedRecord"></div>
       </mat-expansion-panel>

@@ -37,7 +37,7 @@ export class ConfigComponent implements OnInit {
       if (response.customXsls) {
         this.lib_xsl_name_0 = response.customXsls[0].name;
         this.lib_xsl_val_0  = response.customXsls[0].xsl;
-        this.onRefreshRunXsl();
+        this.runXsl();
       }
     },
     err => console.log(err.message));    
@@ -46,7 +46,12 @@ export class ConfigComponent implements OnInit {
   onXslChanged(event: Event) {
     console.log("XSL was changed");
     this.lib_xsl_val_0 = (<HTMLInputElement>event.target).value;
-    this.onRefreshRunXsl();
+    this.runXsl();
+  }
+  onSampleMarcxmlChanged(event: Event) {
+    console.log("XML was changed");
+    this.sampleMarcxml = (<HTMLInputElement>event.target).value;
+    this.runXsl();
   }
 
   onSaveBtnClicked() {
@@ -77,13 +82,17 @@ export class ConfigComponent implements OnInit {
     })
   }
 
-  onRefreshRunXsl() {
-    let xmlDoc = (new DOMParser()).parseFromString(this.sampleMarcxml, 'text/xml');
-    let xslDoc = (new DOMParser()).parseFromString(this.lib_xsl_val_0, 'text/xml');
-    let processor = new XSLTProcessor();
-    processor.importStylesheet(xslDoc); // from https://github.com/krtnio/angular-xslt
-    let  output = (new XMLSerializer()).serializeToString(processor.transformToFragment(xmlDoc, document));
-    this.formattedRecord = output; 
+  runXsl() {
+    try {
+        let xmlDoc = (new DOMParser()).parseFromString(this.sampleMarcxml, 'text/xml');
+        let xslDoc = (new DOMParser()).parseFromString(this.lib_xsl_val_0, 'text/xml');
+        let processor = new XSLTProcessor();
+        processor.importStylesheet(xslDoc); // from https://github.com/krtnio/angular-xslt
+        let  output = (new XMLSerializer()).serializeToString(processor.transformToFragment(xmlDoc, document));
+        this.formattedRecord = output; 
+    } catch (err) {
+        console.log(err);
+    }
   }
 
 }
