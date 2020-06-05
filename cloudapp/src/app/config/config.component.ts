@@ -3,7 +3,6 @@ import { CloudAppConfigService} from '@exlibris/exl-cloudapp-angular-lib';
 import { HttpClient } from '@angular/common/http'; 
 import {Constants} from '../constants';
 
-
 @Component({
   selector: 'app-config',
   templateUrl: './config.component.html',
@@ -48,6 +47,7 @@ export class ConfigComponent implements OnInit {
     this.lib_xsl_val_0 = (<HTMLInputElement>event.target).value;
     this.runXsl();
   }
+
   onSampleMarcxmlChanged(event: Event) {
     console.log("XML was changed");
     this.sampleMarcxml = (<HTMLInputElement>event.target).value;
@@ -91,7 +91,7 @@ export class ConfigComponent implements OnInit {
         let  output = (new XMLSerializer()).serializeToString(processor.transformToFragment(xmlDoc, document));
         this.formattedRecord = output; 
     } catch (err) {
-        console.log(err);
+        this.formattedRecord = err;
     }
   }
 
