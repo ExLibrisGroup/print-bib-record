@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CloudAppConfigService} from '@exlibris/exl-cloudapp-angular-lib';
 import { HttpClient } from '@angular/common/http'; 
-import {Constants} from '../constants';
+import { Constants } from '../constants';
 
 @Component({
   selector: 'app-config',
@@ -78,7 +78,8 @@ export class ConfigComponent implements OnInit {
     let xslFilepath: string = 'assets/' + xslFileName;
     this.http.get(xslFilepath, { responseType: 'application' as 'json'}).subscribe(data => {
         console.log("Load: "+ xslFilepath);
-        this.lib_xsl_val_0 = data.toString();  
+        this.lib_xsl_val_0 = data.toString();
+        this.runXsl();
     })
   }
 

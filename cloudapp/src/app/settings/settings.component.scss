@@ -29,6 +29,8 @@ div.title a {
   margin-right: 10px;
 }
 
-.float-right {
-  float:right;
+#record-preview {
+  border: thin solid black;
+  overflow: auto;
+  max-height: 400px;
 }
