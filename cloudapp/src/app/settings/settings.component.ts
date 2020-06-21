@@ -31,8 +31,7 @@ export class SettingsComponent implements OnInit {
     // if the App has inst-level-config - add it to the dropdown
     this.xslFiles = JSON.parse(JSON.stringify(Constants.XSL_FILES)); // clone by val
     this.configService.get().subscribe( response => {
-      console.log("Got the config:");
-      console.log(response);
+      console.log("Got the config:");      console.log(response);
       if (response.customXsls) {
         response.customXsls.forEach(customXsl => {
           this.xslFiles.push( { id: "instConfig:"+customXsl.name,   name: customXsl.name } );
@@ -46,10 +45,13 @@ export class SettingsComponent implements OnInit {
 
     // change the dropdown to show the selection according to the saved settings
      this.settingsService.get().subscribe( response => {
-       console.log("Got the settings:");
-       console.log(response);
-       this.optionSelected = response.xslFile;
-       this.onSelectXsl(response.xslFile);
+       console.log("Got the settings:");       console.log(response);
+       if (response.xslFile) {
+        this.optionSelected = response.xslFile;
+        this.onSelectXsl(response.xslFile);
+       } else {
+        this.onSelectXsl(this.xslFiles[0].id);
+       }
      },
      err => console.log(err.message));
   }
@@ -66,9 +68,9 @@ export class SettingsComponent implements OnInit {
     } else {
       // XSL configured by the Inst admin - load from the config.
       this.configService.get().subscribe( response => {
-        console.log("Got the config:");
-        console.log(response);
-        this.formattedRecord = this.runXsl(this.sampleMarcxml,response.customXsls[0].xsl);
+        console.log("Got the config:");        console.log(response);
+        if (response.customXsls)
+          this.formattedRecord = this.runXsl(this.sampleMarcxml,response.customXsls[0].xsl);
       },
       err => console.log(err.message));    
     }

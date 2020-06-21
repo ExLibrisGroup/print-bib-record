@@ -46,7 +46,7 @@ export class MainComponent implements OnInit {
   }
 
   loadXsl() {
-    let xslFilepath: string = 'assets/' + 'MARC21slim2English.xsl'; // default
+    let xslFilepath: string = 'assets/' + 'MARC21ColumnarFormat.xsl'; // default
     this.settingsService.get().subscribe( response => {
       console.log("Got the settings: ");
       console.log(response);
