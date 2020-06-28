@@ -3,7 +3,7 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 import { Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http'; 
 import {
-  CloudAppRestService, CloudAppEventsService, CloudAppSettingsService, CloudAppConfigService, Entity, PageInfo
+  CloudAppRestService, CloudAppEventsService, CloudAppSettingsService, CloudAppConfigService, Entity, PageInfo, RestErrorResponse
 } from '@exlibris/exl-cloudapp-angular-lib';
 
 @Component({
@@ -42,7 +42,43 @@ export class MainComponent implements OnInit {
   }
 
   onPageLoad = (pageInfo: PageInfo) => {
+    //console.log("onPageLoad pageInfo:");     console.log(pageInfo);
+
     this.bibEntities = (pageInfo.entities||[]).filter(e=>['BIB_MMS', 'IEP', 'BIB'].includes(e.type));
+
+    this.getListOfBibsFromListOfItems((pageInfo.entities||[]).filter(e=>['ITEM'].includes(e.type)));
+  }
+
+  getListOfBibsFromListOfItems(itemEntities: Entity[]) {
+    itemEntities.forEach(itemEntity => {
+      if (itemEntity.link) {
+        var mmsId: string = itemEntity.link.replace("/bibs/","").replace(/\/holdings\/.*/,"");
+        this.restService.call(`/bibs/${mmsId}?view=brief`).subscribe( response => {
+            let title: string = response.title ? response.title : "";
+            let author: string = response.author ? response.author : "";
+            this.bibEntities.push({ id:mmsId, description:title + " " + author });
+            this.dedupByMmsId();
+        },
+        err => console.log(err.message));    
+      }
+    });
+  }
+
+  dedupByMmsId() {
+    var bibEntitiesUniq: Entity[] = [];
+    this.bibEntities.forEach(bibEntity => {
+      var alreadyThere: boolean = false;
+      bibEntitiesUniq.forEach(bibEntityUniq => {
+        if (bibEntity.id === bibEntityUniq.id) {
+          alreadyThere = true;
+        }
+      });
+      if (!alreadyThere) {
+        // console.log("adding to deduped list: "+bibEntity.description);
+        bibEntitiesUniq.push(bibEntity);
+      }
+    });
+    this.bibEntities = bibEntitiesUniq;
   }
 
   loadXsl() {
@@ -137,3 +173,4 @@ export class MainComponent implements OnInit {
  
 }
 
+const isRestErrorResponse = (object: any): object is RestErrorResponse => 'error' in object;
