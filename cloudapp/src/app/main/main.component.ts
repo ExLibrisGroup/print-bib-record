@@ -43,16 +43,17 @@ export class MainComponent implements OnInit {
 
   onPageLoad = (pageInfo: PageInfo) => {
     //console.log("onPageLoad pageInfo:");     console.log(pageInfo);
+    this.pageEntities = pageInfo.entities;
 
     this.bibEntities = (pageInfo.entities||[]).filter(e=>['BIB_MMS', 'IEP', 'BIB'].includes(e.type));
 
-    this.getListOfBibsFromListOfItems((pageInfo.entities||[]).filter(e=>['ITEM'].includes(e.type)));
+    this.getListOfBibsFromListOfItemsOrPortfolios((pageInfo.entities||[]).filter(e=>['ITEM','PORTFOLIO'].includes(e.type)));
   }
 
-  getListOfBibsFromListOfItems(itemEntities: Entity[]) {
+  getListOfBibsFromListOfItemsOrPortfolios(itemEntities: Entity[]) {
     itemEntities.forEach(itemEntity => {
       if (itemEntity.link) {
-        var mmsId: string = itemEntity.link.replace("/bibs/","").replace(/\/holdings\/.*/,"");
+        var mmsId: string = itemEntity.link.replace("/bibs/","").replace(/\/holdings\/.*/,"").replace(/\/portfolios\/.*/,"");
         this.restService.call(`/bibs/${mmsId}?view=brief`).subscribe( response => {
             let title: string = response.title ? response.title : "";
             let author: string = response.author ? response.author : "";
