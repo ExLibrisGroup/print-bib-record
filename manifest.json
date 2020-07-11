@@ -5,7 +5,9 @@
    "subtitle": "Allows quickly printing records from the repository hit list",
    "author": "Ori Miller",
    "entities": [
-      "BIB_MMS"
+      "BIB_MMS",
+      "ITEM",
+      "PORTFOLIO"
    ],
    "pages": {
       "settings": "/#/settings",

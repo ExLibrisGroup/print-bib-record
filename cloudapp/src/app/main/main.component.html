@@ -1,8 +1,7 @@
 
 <button *ngIf="numRecordsToPrint > 0"
   class="float-right" mat-stroked-button color="primary" (click)="onPrintPreviewNewTab()">
-  Print {{numRecordsToPrint}} 
-  record<span *ngIf="numRecordsToPrint > 1">s</span>
+  Print {{numRecordsToPrint}} records
 </button>
 <button *ngIf="numRecordsToPrint > 0"
   class="float-right" mat-stroked-button color="primary" (click)="onClearSelected()">
@@ -31,13 +30,11 @@
   </section>
 </div>
 
-
 <ng-template #nobib>
-  <p>Please search for a bibliographic record.</p>
+  <p>Please search for bib records or items</p>
 </ng-template>
 
-<!--Debug: -->
-<!--
+<!--Debug: 
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 <hr/>
 Debug:
@@ -48,7 +45,7 @@ Debug:
       <mat-card-title>Page Entity</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <pre>{{ bibEntities | json }}</pre>
+      <pre>{{ pageEntities | json }}</pre>
     </mat-card-content>
   </mat-card>
 </section>

@@ -48,6 +48,8 @@ export class MainComponent implements OnInit {
     this.bibEntities = (pageInfo.entities||[]).filter(e=>['BIB_MMS', 'IEP', 'BIB'].includes(e.type));
 
     this.getListOfBibsFromListOfItemsOrPortfolios((pageInfo.entities||[]).filter(e=>['ITEM','PORTFOLIO'].includes(e.type)));
+
+    this.getListOfBibsFromListOfPOLs((pageInfo.entities||[]).filter(e=>['PO_LINE'].includes(e.type)));
   }
 
   getListOfBibsFromListOfItemsOrPortfolios(itemEntities: Entity[]) {
@@ -59,6 +61,24 @@ export class MainComponent implements OnInit {
             let author: string = response.author ? response.author : "";
             this.bibEntities.push({ id:mmsId, description:title + " " + author });
             this.dedupByMmsId();
+        },
+        err => console.log(err.message));    
+      }
+    });
+  }
+
+  getListOfBibsFromListOfPOLs(itemEntities: Entity[]) {
+    itemEntities.forEach(itemEntity => {
+      if (itemEntity.link) {
+        this.restService.call(itemEntity.link).subscribe( response => {
+            var getBibLink = response.resource_metadata.mms_id.link.replace("/almaws/v1","") + "?view=brief";
+            this.restService.call(getBibLink).subscribe( response => {
+              let title: string = response.title ? response.title : "";
+              let author: string = response.author ? response.author : "";
+              this.bibEntities.push({ id:response.mms_id, description:title + " " + author });
+              this.dedupByMmsId();
+            },
+            err => console.log(err.message));    
         },
         err => console.log(err.message));    
       }
@@ -127,13 +147,33 @@ export class MainComponent implements OnInit {
     marcXml = marcXml.replace("<?xml version=\"1.0\" encoding=\"UTF-16\"?>","");
 
     // enriching the MARCXML with additional useful fields
-    marcXml = marcXml.replace("</record>","<mms_id>"+bibRec.mms_id+"</mms_id>"+"</record>");
-    marcXml = marcXml.replace("</record>","<title>"+bibRec.title+"</title>"+"</record>");
-    marcXml = marcXml.replace("</record>","<author>"+bibRec.author+"</author>"+"</record>");
-    
+    let moreFields: string = 
+      "<mms_id>"+this.escapeXml(bibRec.mms_id)+"</mms_id>"+
+      "<title>"+this.escapeXml(bibRec.title)+"</title>"+
+      "<author>"+this.escapeXml(bibRec.author)+"</author>"+
+      "<isbn>"+this.escapeXml(bibRec.isbn)+"</isbn>"+
+      "<issn>"+this.escapeXml(bibRec.issn)+"</issn>"+
+      "<complete_edition>"+this.escapeXml(bibRec.complete_edition)+"</complete_edition>"+
+      "<network_numbers>"+this.escapeXml(bibRec.network_numbers)+"</network_numbers>"+
+      "<place_of_publication>"+this.escapeXml(bibRec.place_of_publication)+"</place_of_publication>"+
+      "<date_of_publication>"+this.escapeXml(bibRec.date_of_publication)+"</date_of_publication>"+
+      "<publisher_const>"+this.escapeXml(bibRec.publisher_const)+"</publisher_const>";
+
+      marcXml = marcXml.replace("</record>",moreFields+"</record>");
     return marcXml;
   }
 
+  escapeXml(inXml: string) : string {
+    if (inXml) {
+      return inXml.replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
+    } else {
+      return "";
+    }
+  }
 
   onPrintPreviewNewTab() {
     let innerHtml: string = "";
