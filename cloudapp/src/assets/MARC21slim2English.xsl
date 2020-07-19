@@ -225,9 +225,7 @@
         </ul>
       </xsl:template>
       <xsl:template match="datafield[@tag=020]">
-        <p>INTERNATIONAL STANDARD BOOK NUMBER
-        </p>
-        <ul>
+        <p>INTERNATIONAL STANDARD BOOK NUMBER</p>
           <xsl:for-each select="subfield[@code='a']">
             <li>International Standard Book Number:
             <xsl:value-of select="text()"/>
@@ -253,12 +251,9 @@
             <xsl:value-of select="text()"/>
             </li>
           </xsl:for-each>
-        </ul>
       </xsl:template>
       <xsl:template match="datafield[@tag=022]">
-        <p>INTERNATIONAL STANDARD SERIAL NUMBER
-        </p>
-        <ul>
+        <p>INTERNATIONAL STANDARD SERIAL NUMBER</p>
           <xsl:for-each select="subfield[@code='a']">
             <li>International Standard Serial Number:
             <xsl:value-of select="text()"/>
@@ -279,7 +274,6 @@
             <xsl:value-of select="text()"/>
             </li>
           </xsl:for-each>
-        </ul>
       </xsl:template>
       <xsl:template match="datafield[@tag=024]">
         <p>OTHER STANDARD IDENTIFIER

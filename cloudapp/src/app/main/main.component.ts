@@ -183,11 +183,14 @@ export class MainComponent implements OnInit {
     }       
     innerHtml = this.xsltOnCollection("<collection>" + xmlAllBibs + "</collection>"); 
 
-    let Pagelink = "about:blank";
-    let pwa = window.open(Pagelink, "_new");
-    pwa.document.open();
-    pwa.document.write(innerHtml);
-    pwa.document.close();
+    var content = "<html>";
+    content += "<body onload=\"window.print(); \">";
+    content += innerHtml;
+    content += "</body>";
+    content += "</html>";
+    var win = window.open('','','left=0,top=0,width=552,height=477,toolbar=0,scrollbars=0,status =0');
+    win.document.write(content);
+    win.document.close();
   }
 
   onClearSelected() {

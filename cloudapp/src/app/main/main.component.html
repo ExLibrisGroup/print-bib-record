@@ -20,12 +20,11 @@
 
   <section *ngIf="formattedRecord">
     <p></p>
-    <h3>Preview of the last selected record:</h3>
-    <ul>
+    <h3>Preview - last selected record:</h3>
+    <!--<ul>
       <li><strong>MMS ID: </strong>{{ bib.mms_id }}</li>
       <li><strong>Title: </strong>{{ bib.title }}</li>
-      <li><strong>Author: </strong>{{ bib.author }}</li>
-    </ul>
+    </ul>-->
     <div id="record-preview" [innerHTML]="formattedRecord"></div>
   </section>
 </div>

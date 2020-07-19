@@ -15,7 +15,8 @@
    },
    "contentSecurity": {
       "sandbox": {
-         "popups": true
+         "popups": true,
+         "modals": true
       }
    },
    "icon": {
