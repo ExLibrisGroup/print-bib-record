@@ -16,7 +16,7 @@ import {
 // https://ideas.exlibrisgroup.com/forums/308173-alma/suggestions/17421160-it-would-be-helpful-if-there-were-an-option-to-pr
 export class MainComponent implements OnInit {
 
-  private showDebugWin: boolean = false;
+  showDebugWin: boolean = false;
   private pageLoad$: Subscription;
   private xsl: string;
   bibHash: { [index: string]: any; } = {};
