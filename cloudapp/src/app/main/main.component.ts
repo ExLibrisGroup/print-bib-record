@@ -16,6 +16,7 @@ import {
 // https://ideas.exlibrisgroup.com/forums/308173-alma/suggestions/17421160-it-would-be-helpful-if-there-were-an-option-to-pr
 export class MainComponent implements OnInit {
 
+  private showDebugWin: boolean = false;
   private pageLoad$: Subscription;
   private xsl: string;
   bibHash: { [index: string]: any; } = {};
@@ -35,6 +36,12 @@ export class MainComponent implements OnInit {
     this.eventsService.getPageMetadata().subscribe(this.onPageLoad);
     this.pageLoad$ = this.eventsService.onPageLoad(this.onPageLoad);
     this.loadXsl();
+    this.eventsService.getInitData().subscribe(      data => {
+      console.log(data);      
+      if (data.user.primaryId === "exl_impl") {
+        this.showDebugWin = true;
+      }
+    });
   }
 
   ngOnDestroy(): void {

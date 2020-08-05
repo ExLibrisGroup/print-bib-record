@@ -33,11 +33,12 @@
   <p>Please search for bib records or items</p>
 </ng-template>
 
-<!--Debug: 
+<!-- Debug info - for exl_impl -->
+<div *ngIf="showDebugWin">
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 <hr/>
 Debug:
-<textarea #htmlTextArea [value]="formattedRecord"></textarea>
 <section>
   <mat-card class="example-card">
     <mat-card-header>
@@ -48,4 +49,5 @@ Debug:
     </mat-card-content>
   </mat-card>
 </section>
--->
+<textarea #htmlTextArea [value]="formattedRecord"></textarea>
+</div>
