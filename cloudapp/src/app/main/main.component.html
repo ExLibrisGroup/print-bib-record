@@ -1,12 +1,7 @@
-
-<button *ngIf="numRecordsToPrint > 0"
-  class="float-right" mat-stroked-button color="primary" (click)="onPrintPreviewNewTab()">
-  Print {{numRecordsToPrint}} records
-</button>
-<button *ngIf="numRecordsToPrint > 0"
-  class="float-right" mat-stroked-button color="primary" (click)="onClearSelected()">
-  Clear
-</button>
+<div  *ngIf="numRecordsToPrint > 0">
+  <button class="float-right" mat-stroked-button color="primary" (click)="onPrintPreviewNewTab()">Print {{numRecordsToPrint}} records</button>
+  <button class="float-right" mat-stroked-button color="primary" (click)="onClearSelected()">Clear</button>
+</div>
 
 <p></p>
 <div *ngIf="this.bibEntities.length > 0; else nobib">
