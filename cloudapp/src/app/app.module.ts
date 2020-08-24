@@ -8,6 +8,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { MainComponent } from './main/main.component';
+import { HelpComponent } from './help/help.component';
 import { SettingsComponent } from './settings/settings.component';
 import { ConfigComponent } from './config/config.component';
 
@@ -22,6 +23,7 @@ export function getToastrModule() {
   declarations: [
     AppComponent,
     MainComponent,
+    HelpComponent,
     SettingsComponent,
     ConfigComponent
   ],

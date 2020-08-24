@@ -1,11 +1,13 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { MainComponent } from './main/main.component';
+import { HelpComponent } from './help/help.component';
 import { ConfigComponent } from './config/config.component';
 import { SettingsComponent } from './settings/settings.component';
 
 const routes: Routes = [
   { path: '', component: MainComponent },
+  { path: 'help', component: HelpComponent},
   { path: 'config', component: ConfigComponent},
   { path: 'settings', component: SettingsComponent},
 ];

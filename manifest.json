@@ -10,6 +10,7 @@
       "PORTFOLIO"
    ],
    "pages": {
+      "help": "/#/help",
       "settings": "/#/settings",
       "config": "/#/config"
    },
