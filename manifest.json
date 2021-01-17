@@ -1,5 +1,5 @@
 {
-   "id": "ori229/print-bib-record",
+   "id": "exlibrisgroup/print-bib-record",
    "title": "Print Bib records",
    "description": "Provide an XSL-based printing format for MARC21 bibliographic records, starting with the Library of Congress descriptions.",
    "subtitle": "Allows quickly printing records from the repository hit list",
