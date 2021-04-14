@@ -205,6 +205,23 @@ export class MainComponent implements OnInit {
     this.numRecordsToPrint = 0;
   }
 
+  OnSelectOrUnselectAll(e: MatCheckboxChange) {
+    if (e.checked) {
+      console.log("Select All");
+      this.bibEntities.forEach(bibEntity => {
+        this.restService.call(`${bibEntity.link}`).subscribe( bib => {
+          this.bibHash[bibEntity.id] = bib;
+          this.bib = (bib.record_format=='marc21') ? bib : null;
+          this.numRecordsToPrint = Object.keys(this.bibHash).length;
+        },
+        err => console.log(err.message));
+      });
+    } else {
+      console.log("Unselect All");
+      this.onClearSelected();
+    }
+  }
+
   onListChanged(e: MatCheckboxChange){
     console.log({mmsId: e.source.value, checked: e.checked});
     if (e.checked) {
