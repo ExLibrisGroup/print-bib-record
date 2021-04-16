@@ -1,19 +1,17 @@
-<div  *ngIf="numRecordsToPrint > 0">
-  <button class="float-right" mat-stroked-button color="primary" (click)="onPrintPreviewNewTab()">Print {{numRecordsToPrint}} records</button>
-  <button class="float-right" mat-stroked-button color="primary" (click)="onClearSelected()">Clear</button>
+<div class="eca-actions">
+  <button mat-flat-button color="secondary" (click)="onClearSelected()">Clear</button>
+  <button mat-flat-button color="primary" [disabled]="selectedEntities.length == 0" (click)="onPrintPreviewNewTab()">Print {{selectedEntities.length}} records</button>
 </div>
-
-<p></p>
-<div *ngIf="this.bibEntities.length > 0; else nobib">
-
+<div class="loading-shade" *ngIf="loading">
+  <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+</div>
   <h3>Select record(s) to print:</h3>
-  <mat-checkbox (change)="OnSelectOrUnselectAll($event)">All</mat-checkbox>
-  <div *ngFor="let entity of bibEntities" id="list-of">
-    <mat-checkbox [value]="entity.id"
-    (change)="onListChanged($event)" [checked]="bibHash[entity.id]" 
-    >{{entity.description}}</mat-checkbox>
-  </div> 
-
+  <eca-select-entities #selectEntities
+    [(selected)]="selectedEntities"
+    [entityTypes]="entityTypes"
+    [entities$]="entities$"
+  >
+  </eca-select-entities>
   <section *ngIf="formattedRecord">
     <p></p>
     <h3>Preview - last selected record:</h3>
@@ -23,11 +21,6 @@
     </ul>-->
     <div id="record-preview" [innerHTML]="formattedRecord"></div>
   </section>
-</div>
-
-<ng-template #nobib>
-  <p>Please search for bib records or items</p>
-</ng-template>
 
 <!-- Debug info - for exl_impl -->
 <div *ngIf="showDebugWin">

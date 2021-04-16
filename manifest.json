@@ -1,13 +1,14 @@
 {
    "id": "exlibrisgroup/print-bib-record",
    "title": "Print Bib records",
-   "description": "Provide an XSL-based printing format for MARC21 bibliographic records, starting with the Library of Congress descriptions.",
    "subtitle": "Allows quickly printing records from the repository hit list",
    "author": "Ori Miller",
+   "description": "Provide an XSL-based printing format for MARC21 bibliographic records, starting with the Library of Congress descriptions.",
    "entities": [
       "BIB_MMS",
       "ITEM",
-      "PORTFOLIO"
+      "PORTFOLIO",
+      "PO_LINE"
    ],
    "pages": {
       "help": "/#/help",
