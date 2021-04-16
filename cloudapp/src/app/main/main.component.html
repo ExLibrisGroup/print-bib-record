@@ -2,9 +2,6 @@
   <button mat-flat-button color="secondary" (click)="onClearSelected()">Clear</button>
   <button mat-flat-button color="primary" [disabled]="selectedEntities.length == 0" (click)="onPrintPreviewNewTab()">Print {{selectedEntities.length}} records</button>
 </div>
-<div class="loading-shade" *ngIf="loading">
-  <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
-</div>
   <h3>Select record(s) to print:</h3>
   <eca-select-entities #selectEntities
     [(selected)]="selectedEntities"
@@ -39,4 +36,7 @@ Debug:
   </mat-card>
 </section>
 <textarea #htmlTextArea [value]="formattedRecord"></textarea>
+</div>
+<div class="loading-shade" *ngIf="loading">
+  <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
 </div>

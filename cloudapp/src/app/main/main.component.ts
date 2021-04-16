@@ -24,7 +24,7 @@ export class MainComponent implements OnInit {
   entityTypes = supportedEntities;
 
   entities$ = this.eventsService.entities$.pipe(
-    tap(() => setTimeout(()=>this.loading = true)),
+    tap(() => this.loading = true),
     switchMap(entities => {
       const bibEntities: Observable<Entity>[] = entities.map(e => {
         switch (e.type) {
@@ -49,7 +49,7 @@ export class MainComponent implements OnInit {
         index === self.findIndex(e => e.id === entity.id)
       )
     ), 
-    tap(() => setTimeout(()=>this.loading = false))
+    tap(() => this.loading = false)
   )
 
   bibEntityFromItemOrPortfolio(entity: Entity): Observable<Entity> {
