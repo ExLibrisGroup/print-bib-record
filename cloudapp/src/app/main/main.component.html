@@ -1,5 +1,5 @@
 <div class="eca-actions">
-  <button mat-flat-button color="secondary" (click)="selectedEntities = []">Clear</button>
+  <button mat-flat-button color="secondary" (click)="selectEntities.clear();">Clear</button>
   <button mat-flat-button color="primary" [disabled]="selectedEntities.length == 0" (click)="onPrintPreviewNewTab()">Print {{selectedEntities.length}} records</button>
 </div>
   <h3>Select record(s) to print:</h3>
