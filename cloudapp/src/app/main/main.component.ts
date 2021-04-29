@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable, forkJoin, of } from 'rxjs';
-import { catchError, finalize, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, defaultIfEmpty, finalize, map, switchMap, tap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http'; 
 import { CloudAppRestService, CloudAppEventsService, CloudAppSettingsService, CloudAppConfigService, Entity, EntityType } from '@exlibris/exl-cloudapp-angular-lib';
 // @ts-ignore
@@ -39,7 +39,7 @@ export class MainComponent implements OnInit {
             return of(null)
         }
       });
-      return forkJoin(bibEntities);
+      return forkJoin(bibEntities).pipe(defaultIfEmpty([]));
     }),
     map(entities => entities
       /* Filter out null entities */
