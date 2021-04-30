@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { MatCheckboxChange } from '@angular/material/checkbox'; 
-import { Subscription } from 'rxjs';
+import { Observable, forkJoin, of } from 'rxjs';
+import { catchError, defaultIfEmpty, finalize, map, switchMap, tap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http'; 
-import {
-  CloudAppRestService, CloudAppEventsService, CloudAppSettingsService, CloudAppConfigService, Entity, PageInfo, RestErrorResponse
-} from '@exlibris/exl-cloudapp-angular-lib';
+import { CloudAppRestService, CloudAppEventsService, CloudAppSettingsService, CloudAppConfigService, Entity, EntityType } from '@exlibris/exl-cloudapp-angular-lib';
+// @ts-ignore
+import { entities as supportedEntities } from '../../../../manifest.json';
 
 @Component({
   selector: 'app-main',
@@ -17,14 +17,64 @@ import {
 export class MainComponent implements OnInit {
 
   showDebugWin: boolean = false;
-  private pageLoad$: Subscription;
   private xsl: string;
-  bibHash: { [index: string]: any; } = {};
-  bib: any;
-  pageEntities: Entity[];
-  bibEntities: Entity[];
   formattedRecord: string; 
-  numRecordsToPrint: number;
+  loading = false;
+  selectedEntities = new Array<Entity>();
+  entityTypes = supportedEntities;
+
+  entities$ = this.eventsService.entities$.pipe(
+    tap(() => this.loading = true),
+    switchMap(entities => {
+      const bibEntities: Observable<Entity>[] = entities.map(e => {
+        switch (e.type) {
+          case EntityType.BIB_MMS:
+            return of(e);
+          case EntityType.PORTFOLIO:
+          case EntityType.ITEM:
+            return this.bibEntityFromItemOrPortfolio(e)
+          case EntityType.PO_LINE:
+            return this.bibEntityFromPOLine(e);
+          default: 
+            return of(null)
+        }
+      });
+      return forkJoin(bibEntities).pipe(defaultIfEmpty([]));
+    }),
+    map(entities => entities
+      /* Filter out null entities */
+      .filter(e=>!!e)
+      /* Unique */
+      .filter((entity, index, self) =>
+        index === self.findIndex(e => e.id === entity.id)
+      )
+    ), 
+    tap(() => this.loading = false)
+  )
+
+  bibEntityFromItemOrPortfolio(entity: Entity): Observable<Entity> {
+    const link = entity.link.match(/(\/bibs\/\d*)/)[1];
+    return this.restService.call(link).pipe(map(bib=>this.entityFromBib(bib)))
+  }
+
+  bibEntityFromPOLine(entity: Entity): Observable<Entity> {
+    return this.restService.call(entity.link).pipe(
+      map(item => item.resource_metadata.mms_id.link + "?view=brief"),
+      switchMap(link => this.restService.call(link)),
+      map(bib => this.entityFromBib(bib)),
+      catchError(e => of(null)), /* If BIB doesn't exist */ 
+    )
+  }
+
+  entityFromBib(bib: any): Entity {
+    return bib.record_format != 'marc21' ? null : 
+    { 
+      description: bib.title + ' ' + (bib.author || ''),
+      id: bib.mms_id,
+      link: bib.link,
+      type: EntityType.BIB_MMS
+    }
+  }
 
   constructor(private restService: CloudAppRestService,
     private eventsService: CloudAppEventsService,
@@ -33,80 +83,12 @@ export class MainComponent implements OnInit {
     private readonly http: HttpClient) { }
 
   ngOnInit() {
-    this.eventsService.getPageMetadata().subscribe(this.onPageLoad);
-    this.pageLoad$ = this.eventsService.onPageLoad(this.onPageLoad);
     this.loadXsl();
     this.eventsService.getInitData().subscribe(      data => {
-      console.log(data);      
       if (data.user.primaryId === "exl_impl") {
         this.showDebugWin = true;
       }
     });
-  }
-
-  ngOnDestroy(): void {
-    this.pageLoad$.unsubscribe();
-  }
-
-  onPageLoad = (pageInfo: PageInfo) => {
-    //console.log("onPageLoad pageInfo:");     console.log(pageInfo);
-    this.pageEntities = pageInfo.entities;
-
-    this.bibEntities = (pageInfo.entities||[]).filter(e=>['BIB_MMS', 'IEP', 'BIB'].includes(e.type));
-
-    this.getListOfBibsFromListOfItemsOrPortfolios((pageInfo.entities||[]).filter(e=>['ITEM','PORTFOLIO'].includes(e.type)));
-
-    this.getListOfBibsFromListOfPOLs((pageInfo.entities||[]).filter(e=>['PO_LINE'].includes(e.type)));
-  }
-
-  getListOfBibsFromListOfItemsOrPortfolios(itemEntities: Entity[]) {
-    itemEntities.forEach(itemEntity => {
-      if (itemEntity.link) {
-        var mmsId: string = itemEntity.link.replace("/bibs/","").replace(/\/holdings\/.*/,"").replace(/\/portfolios\/.*/,"");
-        this.restService.call(`/bibs/${mmsId}?view=brief`).subscribe( response => {
-            let title: string = response.title ? response.title : "";
-            let author: string = response.author ? response.author : "";
-            this.bibEntities.push({ id:mmsId, description:title + " " + author });
-            this.dedupByMmsId();
-        },
-        err => console.log(err.message));    
-      }
-    });
-  }
-
-  getListOfBibsFromListOfPOLs(itemEntities: Entity[]) {
-    itemEntities.forEach(itemEntity => {
-      if (itemEntity.link) {
-        this.restService.call(itemEntity.link).subscribe( response => {
-            var getBibLink = response.resource_metadata.mms_id.link.replace("/almaws/v1","") + "?view=brief";
-            this.restService.call(getBibLink).subscribe( response => {
-              let title: string = response.title ? response.title : "";
-              let author: string = response.author ? response.author : "";
-              this.bibEntities.push({ id:response.mms_id, description:title + " " + author });
-              this.dedupByMmsId();
-            },
-            err => console.log(err.message));    
-        },
-        err => console.log(err.message));    
-      }
-    });
-  }
-
-  dedupByMmsId() {
-    var bibEntitiesUniq: Entity[] = [];
-    this.bibEntities.forEach(bibEntity => {
-      var alreadyThere: boolean = false;
-      bibEntitiesUniq.forEach(bibEntityUniq => {
-        if (bibEntity.id === bibEntityUniq.id) {
-          alreadyThere = true;
-        }
-      });
-      if (!alreadyThere) {
-        // console.log("adding to deduped list: "+bibEntity.description);
-        bibEntitiesUniq.push(bibEntity);
-      }
-    });
-    this.bibEntities = bibEntitiesUniq;
   }
 
   loadXsl() {
@@ -185,60 +167,23 @@ export class MainComponent implements OnInit {
   onPrintPreviewNewTab() {
     let innerHtml: string = "";
     let xmlAllBibs: string = "";
-    for (let key in this.bibHash) {
-      xmlAllBibs = xmlAllBibs + this.singleRecMarcXml(this.bibHash[key]);
-    }       
-    innerHtml = this.xsltOnCollection("<collection>" + xmlAllBibs + "</collection>"); 
-
-    var content = "<html>";
-    content += "<body onload=\"window.print(); \">";
-    content += innerHtml;
-    content += "</body>";
-    content += "</html>";
-    var win = window.open('','','left=0,top=0,width=552,height=477,toolbar=0,scrollbars=0,status =0');
-    win.document.write(content);
-    win.document.close();
+    const link = '/bibs?mms_id=' + this.selectedEntities.map(e=>e.id).join(',');
+    this.loading = true;
+    this.restService.call(link).pipe(finalize(()=>this.loading = false))
+    .subscribe(bibs => {
+      for (let bib of bibs.bib) {
+        xmlAllBibs = xmlAllBibs + this.singleRecMarcXml(bib);
+      }
+      innerHtml = this.xsltOnCollection("<collection>" + xmlAllBibs + "</collection>"); 
+  
+      var content = "<html>";
+      content += "<body onload=\"window.print(); \">";
+      content += innerHtml;
+      content += "</body>";
+      content += "</html>";
+      var win = window.open('','','left=0,top=0,width=552,height=477,toolbar=0,scrollbars=0,status =0');
+      win.document.write(content);
+      win.document.close();
+    })
   }
-
-  onClearSelected() {
-    this.bibHash = {};
-    this.numRecordsToPrint = 0;
-  }
-
-  OnSelectOrUnselectAll(e: MatCheckboxChange) {
-    if (e.checked) {
-      console.log("Select All");
-      this.bibEntities.forEach(bibEntity => {
-        this.restService.call(`${bibEntity.link}`).subscribe( bib => {
-          this.bibHash[bibEntity.id] = bib;
-          this.bib = (bib.record_format=='marc21') ? bib : null;
-          this.numRecordsToPrint = Object.keys(this.bibHash).length;
-        },
-        err => console.log(err.message));
-      });
-    } else {
-      console.log("Unselect All");
-      this.onClearSelected();
-    }
-  }
-
-  onListChanged(e: MatCheckboxChange){
-    console.log({mmsId: e.source.value, checked: e.checked});
-    if (e.checked) {
-      this.restService.call(`/bibs/${e.source.value}`).subscribe( bib => {
-        this.bibHash[e.source.value] = bib;
-        this.formattedRecord = this.xsltOnCollection("<collection>" + this.singleRecMarcXml(bib) + "</collection>"); 
-        this.bib = (bib.record_format=='marc21') ? bib : null;
-        this.numRecordsToPrint = Object.keys(this.bibHash).length;
-      },
-      err => console.log(err.message));
-    } else {
-      this.formattedRecord = "";
-      delete this.bibHash[e.source.value];
-      this.numRecordsToPrint = Object.keys(this.bibHash).length;
-    }
-  }
- 
 }
-
-const isRestErrorResponse = (object: any): object is RestErrorResponse => 'error' in object;
