@@ -15,7 +15,7 @@
     "@exlibris/exl-cloudapp-base": "^0.6.0",
     "@ngx-translate/core": "^12.1.0",
     "eca-components": "^1.3.3",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "ngx-toastr": "^12.0.0",
     "rxjs": "^6.5.5",
     "uuid": "^8.0.0"
