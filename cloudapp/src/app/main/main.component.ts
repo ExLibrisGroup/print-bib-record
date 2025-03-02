@@ -48,7 +48,12 @@ export class MainComponent implements OnInit {
       .filter((entity, index, self) =>
         index === self.findIndex(e => e.id === entity.id)
       )
-    ), 
+    ),
+    tap((filteredEntities) => {
+      if (filteredEntities.length === 1) {
+        this.selectedEntities = [...this.selectedEntities, filteredEntities[0]];
+      }
+    }),
     tap(() => this.loading = false)
   )
 
